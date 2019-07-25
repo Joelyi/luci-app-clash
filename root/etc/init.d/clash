@@ -8,8 +8,6 @@ CLASH="/etc/clash/clash"
 CLASH_CONFIG="/etc/clash"
 CRON_FILE="/etc/crontabs/root"
 
-USE_PROCD=1
-
 revert_dns() {
 #=========================================================================================================================== 
 	dns_serve1=$(uci get dhcp.@dnsmasq[0].server 2>/dev/null)
@@ -213,7 +211,7 @@ fi
 #===========================================================================================================================
 }
 
-start_service(){
+start(){
 #=========================================================================================================================== 
 if pidof clash >/dev/null; then
 	kill $(pidof clash) >/dev/null 2>&1 || kill -9 $(ps | grep clash | grep -v grep | awk '{print $1}') >/dev/null 2>&1
@@ -277,7 +275,7 @@ fi
 
 
 
-stop_service(){
+stop(){
 #=========================================================================================================================== 
 		iptables -t nat -F clash_tcp >/dev/null 2>&1
 		iptables -t nat -X clash_tcp >/dev/null 2>&1
