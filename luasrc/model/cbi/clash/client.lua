@@ -5,18 +5,13 @@ local HTTP = require "luci.http"
 local DISP = require "luci.dispatcher"
 local UTIL = require "luci.util"
 
+ful = Form("upload", nil)
+ful.reset = false
+ful.submit = false
 
 m = Map("clash")
 s = m:section(TypedSection, "clash")
 s.anonymous = true
-
-
-o = s:option( Flag, "enable")
-o.title = translate("Enable")
-o.default = 0
-o.rmempty = false
-o.description = translate("Enable Client")
-
 
 o = s:option(Flag, "auto_update", translate("Auto Update"))
 o.rmempty = false
@@ -46,13 +41,25 @@ o.write = function()
   HTTP.redirect(DISP.build_url("admin", "services", "clash", "client"))
 end
 
-
-local apply = luci.http.formvalue("cbi.apply")
-if apply then
-	os.execute("/etc/init.d/clash restart >/dev/null 2>&1 &")
+o = s:option(Button, "enable") 
+o.inputtitle = translate("Start Client")
+o.inputstyle = "apply"
+o.write = function()
+  uci:set("clash", "config", "enable", 1)
+  uci:commit("clash")
+  SYS.call("/etc/init.d/clash restart >/dev/null 2>&1 &")
 end
 
+o = s:option(Button, "disable")
+o.title = translate("Stop Client")
+o.inputtitle = translate("Stop Client")
+o.inputstyle = "reset"
+o.write = function()
+  uci:set("clash", "config", "enable", 0)
+  uci:commit("clash")
+  SYS.call("/etc/init.d/clash stop >/dev/null 2>&1 &")
+end
 
-return m
+return m, ful
 
 
