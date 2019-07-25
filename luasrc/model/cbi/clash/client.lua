@@ -43,6 +43,7 @@ o.write = function()
 end
 
 o = s:option(Button, "enable") 
+o.title = translate("Start Client")
 o.inputtitle = translate("Start Client")
 o.inputstyle = "apply"
 o.write = function()
